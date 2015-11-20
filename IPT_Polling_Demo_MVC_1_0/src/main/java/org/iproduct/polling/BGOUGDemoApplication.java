@@ -25,8 +25,16 @@
  */
 package org.iproduct.polling;
 
+import java.util.HashSet;
+import java.util.Set;
 import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.core.Application;
+import org.iproduct.polling.mvc.controller.PollsController;
+import org.iproduct.polling.mvc.controller.RootController;
+import org.iproduct.polling.resources.AlternativesResource;
+import org.iproduct.polling.resources.JAXBContextResolver;
+import org.iproduct.polling.resources.PollsResource;
+import org.iproduct.polling.resources.VotesResource;
 
 /**
  * The JAX-RS bootstrap class that configures the polling application
@@ -36,4 +44,19 @@ import javax.ws.rs.core.Application;
  */
 @ApplicationPath("/app")
 public class BGOUGDemoApplication extends Application {
+    
+    @Override
+    public Set<Class<?>> getClasses() {
+        final Set<Class<?>> set = new HashSet<>();
+        set.add(RootController.class);
+        set.add(PollsController.class);
+        set.add(AlternativesResource.class);
+        set.add(PollsResource.class);
+        set.add(VotesResource.class);
+        set.add(JAXBContextResolver.class);
+        set.add(WebApplicationExceptionMapper.class);
+        set.add(ClientErrorExceptionMapper.class);
+        set.add(ConstraintViolationExceptionMapper.class);
+        return set;
+    }
 }

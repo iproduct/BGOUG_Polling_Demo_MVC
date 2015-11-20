@@ -32,7 +32,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
-import javax.enterprise.inject.Model;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -57,7 +56,6 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author Trayan Iliev, IPT [http://iproduct.org]
  */
 @Entity
-@Model
 @XmlRootElement
 @XmlAccessorType(javax.xml.bind.annotation.XmlAccessType.FIELD)
 public class Poll implements Serializable {

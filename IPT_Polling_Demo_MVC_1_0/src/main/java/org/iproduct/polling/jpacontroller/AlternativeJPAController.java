@@ -41,8 +41,6 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.ParameterExpression;
-import javax.validation.ConstraintViolation;
-import javax.validation.ConstraintViolationException;
 import org.iproduct.polling.entity.Alternative;
 import org.iproduct.polling.entity.Alternative_;
 import org.iproduct.polling.entity.Poll_;

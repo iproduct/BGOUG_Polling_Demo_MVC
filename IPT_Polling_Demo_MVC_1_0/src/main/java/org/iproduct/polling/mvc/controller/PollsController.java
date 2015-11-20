@@ -39,14 +39,18 @@ import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.mvc.Models;
 import javax.mvc.annotation.Controller;
+import javax.mvc.annotation.View;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
-import javax.ws.rs.DELETE;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
 import org.iproduct.polling.beans.ErrorsBean;
 import org.iproduct.polling.jpacontroller.AlternativeJPAController;
 import org.iproduct.polling.jpacontroller.PollJPAController;
@@ -54,9 +58,6 @@ import org.iproduct.polling.entity.Alternative;
 import org.iproduct.polling.entity.Poll;
 import org.iproduct.polling.entity.Vote;
 import org.iproduct.polling.jpacontroller.VoteJPAController;
-import org.iproduct.polling.jpacontroller.exceptions.NonExistingEntityException;
-import org.iproduct.polling.jpacontroller.exceptions.RollbackFailureException;
-import org.iproduct.polling.resources.utils.Errors;
 
 /**
  *
@@ -72,7 +73,6 @@ public class PollsController {
     Models models;
     
     @Inject
-    @Errors
     ErrorsBean errors;
 
     @Inject
@@ -86,17 +86,16 @@ public class PollsController {
 
     @GET
     @Path("/add")
-    public String addPoll() {
-        return "add_poll.jsp";
-    }
+    @View("add_poll.jsp")
+    public void addPoll() {}
 
     @POST
     @Path("/add")
     public String postPollWithAlternatives(
-            @FormParam("title") String title,
-            @FormParam("question") String question,
-            @FormParam("from") String from,
-            @FormParam("to") String to,
+            @NotNull @Size(min=1, max=45) @FormParam("title") String title,
+            @NotNull @Size(min=1, max=80) @FormParam("question") String question,
+            @Pattern(regexp="\\d{4}-\\d{2}-\\d{2}") @FormParam("from") String from,
+            @Pattern(regexp="\\d{4}-\\d{2}-\\d{2}") @FormParam("to") String to,
             @FormParam("alternatives") String alternatives) {
         System.out.println("!!!!" + title + ", " + question + ", " + from + ", " + to + ", " + alternatives);
         boolean valid = true;
@@ -105,13 +104,13 @@ public class PollsController {
         try {
             fromDate = sdf.parse(from);
         } catch (ParseException e) {
-            errors.getErrorMessages().add("Invalid From date.");
+            errors.getMessages().add("Invalid From date.");
             valid = false;
         }
         try {
             toDate = sdf.parse(to);
         } catch (ParseException e) {
-            errors.getErrorMessages().add("Invalid To date.");
+            errors.getMessages().add("Invalid To date.");
             valid = false;
         }
         List<String> parsedAlternatives = Arrays.asList(alternatives.split("\\|"))
@@ -132,11 +131,11 @@ public class PollsController {
                 ex.getConstraintViolations().stream().forEach(
                     (ConstraintViolation cv) -> {
                         System.out.println(cv);
-                        errors.getErrorMessages().add(cv.getMessage());
+                        errors.getMessages().add(cv.getMessage());
                     }); 
                 valid = false;
             } catch (Exception ex) {
-                errors.getErrorMessages().add("Error creating the poll on server.");
+                errors.getMessages().add("Error creating the poll on server.");
                 Logger.getLogger(PollsController.class.getName()).log(Level.SEVERE, null, ex);
                 valid = false;
             }
@@ -162,10 +161,10 @@ public class PollsController {
         try {
             pollController.destroy(pollId);
         } catch (Exception ex) {
-            errors.getErrorMessages().add("Error deleting poll.");
+            errors.getMessages().add("Error deleting poll.");
             Logger.getLogger(PollsController.class.getName()).log(Level.SEVERE, null, ex);
         }
-        return "redirect:/polls/browse";
+        return "redirect:/polls/manage";
     }
 
     @POST
@@ -176,17 +175,10 @@ public class PollsController {
         try {
             voteController.create(alternativeId, vote);
         } catch (Exception ex) {
-            errors.getErrorMessages().add("Error creating the poll on server.");
+            errors.getMessages().add("Error creating the poll on server.");
             Logger.getLogger(PollsController.class.getName()).log(Level.SEVERE, null, ex);
         }
         return "redirect:/polls/" + pollId;
-    }
-
-    @GET
-    @Path("/browse")
-    public String showBrowsePollsPage() {
-        models.put("polls", pollController.findPollEntities()); //All polls
-        return "browse_polls.jsp";
     }
 
     @GET
@@ -195,6 +187,20 @@ public class PollsController {
         models.put("polls", pollController.findPollEntities()); //All polls
         return "manage_polls.jsp";
     }
+    
+    @GET
+    @Path("/browse")
+    public String showBrowsePollsPage() {
+        models.put("polls", pollController.findPollEntities()); //All polls
+        return "browse_polls.jsp";
+    }
 
+    @GET
+    @Path("/velocity")
+    @Produces("text/html")
+    @View("browse_polls_velocity.vm")
+    public void showBrowsePollsVelocity() {
+        models.put("polls", pollController.findPollEntities()); //All polls
+    }
 
 }

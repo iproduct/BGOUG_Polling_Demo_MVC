@@ -24,36 +24,30 @@
  * "Portions Copyright [year] [name of copyright owner]"
  *
  */
-package org.iproduct.polling.beans;
+package org.iproduct.polling;
 
-import java.util.ArrayList;
-import java.util.List;
-import javax.annotation.PostConstruct;
-import javax.enterprise.context.RequestScoped;
-import javax.inject.Named;
+import javax.ws.rs.ClientErrorException;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.ext.ExceptionMapper;
+import javax.ws.rs.ext.Provider;
 
 
 /**
- * Collects validation errors for action requests to show at client side
+ * 
  *
  * @author Trayan Iliev, IPT [http://iproduct.org]
  */
-@Named("errors")
-@RequestScoped
-public class ErrorsBean {
-    private final List<String> messages = new ArrayList<>();
-   
-    @PostConstruct
-    public void afterCreate() {
-        System.out.println("Soup created");
-    }
-    
-
-    public ErrorsBean() {
-    }
-
-    public List<String> getMessages() {
-        return messages;
-    }
-    
+@Provider
+public class ClientErrorExceptionMapper implements 
+        ExceptionMapper<ClientErrorException> {
+ 
+  @Override
+  public Response toResponse(ClientErrorException ex) {
+    System.out.println("!!!!Client Error EXCEPTION Catched: " + ex);
+    return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("hello.jsp").build();
+//    return Response.status(ex.getResponse().getStatus()).
+//      entity(ex.getMessage()).
+//      type("text/plain").
+//      build();
+  }
 }

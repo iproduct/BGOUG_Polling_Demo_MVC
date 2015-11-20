@@ -26,27 +26,45 @@
  */
 package org.iproduct.polling;
 
-import javax.ws.rs.WebApplicationException;
+import java.util.Set;
+import javax.enterprise.context.RequestScoped;
+import javax.inject.Inject;
+import javax.mvc.Models;
+import javax.validation.ConstraintViolation;
+import javax.validation.ConstraintViolationException;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
-
+import org.iproduct.polling.beans.ErrorsBean;
 
 /**
- * 
+ *
  *
  * @author Trayan Iliev, IPT [http://iproduct.org]
  */
 @Provider
-public class WebApplicationExceptionMapper implements 
-        ExceptionMapper<WebApplicationException> {
-  @Override
-  public Response toResponse(WebApplicationException ex) {
-    System.out.println("!!!!Web Application EXCEPTION Catched: " + ex);
-    return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("hello.jsp").build();
-//    return Response.status(ex.getResponse().getStatus()).
-//      entity(ex.getMessage()).
-//      type("text/plain").
-//      build();
-  }
+@RequestScoped
+public class ConstraintViolationExceptionMapper
+        implements ExceptionMapper<ConstraintViolationException> {
+
+    @Inject
+    private ErrorsBean errors;
+    
+//    @Inject
+//    Models models;
+
+    @Override
+    public Response toResponse(ConstraintViolationException ex) {
+        System.out.println("!!!!!!!!!!!!!!!!!!! Constraint Violation EXCEPTION cought: " + ex);
+        final Set<ConstraintViolation<?>> violations = ex.getConstraintViolations();
+        if (!violations.isEmpty()) {
+            for(ConstraintViolation cv : violations){
+                errors.getMessages().add("Invalid value: '" + cv.getInvalidValue() 
+                    + "' for " + cv.getPropertyPath() 
+                    + ". Error message: " + cv.getMessage());
+            }
+        }
+//        models.put("errors", errors);
+        return Response.status(Response.Status.BAD_REQUEST).entity("errors.jsp").build();
+    }
 }

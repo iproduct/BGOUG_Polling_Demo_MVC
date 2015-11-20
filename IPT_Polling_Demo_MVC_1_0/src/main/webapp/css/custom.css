@@ -37,6 +37,8 @@ footer {
 }
 .panel-title {
     overflow: hidden;
+    text-overflow: ellipsis;
+    height: 20px;
 }
 .poll-legend {
     overflow:hidden;

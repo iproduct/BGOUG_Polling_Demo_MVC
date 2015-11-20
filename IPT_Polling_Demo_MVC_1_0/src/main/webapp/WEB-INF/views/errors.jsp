@@ -1,9 +1,10 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <!DOCTYPE html>
 <html>
     <head>
-        <title>IPT Polling Demo MVC 1.0 | Add Poll</title>
+        <title>IPT Polling Demo MVC 1.0 | Poll Details</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="stylesheet" href="../../css/bootstrap.min.css">
@@ -35,16 +36,16 @@
 
             <!-- Collect the nav links, forms, and other content for toggling -->
             <div class="navbar-collapse bs-navbar-collapse collapse in" id="bs-example-navbar-collapse-1">
-                <ul class="nav navbar-nav">
+                <ul class="nav navbar-nav">                   
                     <li><a href="..">Home<span class="sr-only">(current)</span></a></li>
                     <!--<li><a href="#">Link</a></li>-->
                     <li class="dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button">Polls <span class="caret"></span></a>
                         <ul class="dropdown-menu" role="menu">
-                            <li><a href="browse">Browse All Polls</a></li>
+                            <li><a href="#" class="active">Browse All Polls</a></li>
                             <li><a href="velocity">Browse All Polls [Velocity]</a></li>
                             <li class="divider"></li>
-                            <li><a href="#" class="active">Add New Poll</a></li>
+                            <li><a href="add">Add New Poll</a></li>
                             <li><a href="manage">Manage Polls</a></li>
                         </ul>
                     </li>
@@ -72,74 +73,58 @@
 
             <div class="jumbotron">
                 <h1>IPT Polling Demo MVC 1.0</h1>
+            </div> <!-- end jumbotron -->
+
+            <div class="row"><h2 class="col-lg-12 text-danger">Data Errors</h2></div>
+
+            <!-- Browse polls -->
+            <div class="row">
+
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">Validation Messages</h3>   
+                    </div>
+                    <div class="panel-body">
+                        <c:forEach items="${errors.messages}" var="err" varStatus="status">
+                            <div class="panel-error"><c:out value="${err}" /></div> 
+                        </c:forEach> 
+                    </div>
+                </div>
+
+            </div> <!-- DIV class="row" --> 
+
+            <!--Modal image zooming -->
+            <div id="message-dialog" class="modal fade" tabindex="-1" role="dialog">
+                <div class="modal-dialog modal-message-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal">×</button>
+                            <h3 class="modal-title">Delete Poll Confirmation Dialog</h3>
+                        </div>
+                        <div class="modal-body">
+                        </div>
+                        <div class="modal-footer">
+                            <button class="btn" data-dismiss="modal" aria-hidden="true">Cancel</button>
+                            <a class="btn btn-danger" id="dataConfirmOK">DELETE Poll Permanently</a>
+                        </div>
+                    </div>
+                </div>
             </div>
 
-            <h2>Add New Poll</h2>
-
+            <!-- Polls pagination -->
             <div class="row">
-                <section class="col-xs-12 col-sm-8">
-                    <form class="form-horizontal" method="POST">
-                        <div class="form-group">
-                            <label for="title" class="col-sm-2 control-label">Poll Title</label>
-                            <div class="col-sm-10">
-                                <input type="text" class="form-control" name="title" id="title" placeholder="Title">
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="question" class="col-sm-2 control-label">Poll Question</label>
-                            <div class="col-sm-10">
-                                <input type="text" class="form-control" name="question" id="question" placeholder="Question">
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="from" class="col-sm-2 control-label">Active From</label>
-                            <div class="col-sm-4">
-                                <input type="date" class="form-control" name="from" id="from" placeholder="From">
-                            </div>
-                            <label for="to" class="col-sm-2 control-label"> To </label>
-                            <div class="col-sm-4">
-                                <input type="date" class="form-control" name="to" id="to" placeholder="To">
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="alternatives-group" class="col-sm-2 control-label">Alternatives</label>
-                            <div class="col-sm-6">
-                                <ul id="alternatives-sortable">
-                                    <li id="1" class="ui-state-default">
-                                        <div class="input-group">
-                                            <span class="input-group-addon label-success" id="basic-addon1">@</span>
-                                            <input type="text" class="form-control" placeholder="Type alternative description here ...">
-                                            <span class="input-group-btn">
-                                                <button class="btn btn-default remove-alternative" type="button">X</button>
-                                            </span>
-                                        </div><!-- /input-group -->
-                                    </li>
-                                </ul>
-                            </div>
-                            <div class="col-sm-2 left">
-                                <button id="add-alternative" type="button" class="btn btn-success">Add Alternative</button>
-                            </div>
-
-                            <input type="hidden" name="alternatives" id="alternatives">
-                        </div>
-
-                        <div class="form-group">
-                            <div class="col-sm-offset-2 col-sm-10">
-                                <div class="checkbox">
-                                    <label>
-                                        <input type="checkbox" checked> Show me the poll
-                                    </label>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <div class="col-sm-offset-2 col-sm-10">
-                                <button id="submit-poll" type="submit" class="btn btn-primary">Submit</button>
-                            </div>
-                        </div>
-                    </form>
-                </section>
-            </div> <!-- DIV class="row" -->
+                <nav class="col-xs-12">
+                    <ul class="pagination pagination-lg center-block col-md-7 pull-right">
+                        <li class="disabled"><a href="#" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a></li>
+                        <li class="active"><a href="#">1 <span class="sr-only">(current)</span></a></li>
+                        <li><a href="#">2</a></li>
+                        <li><a href="#">3</a></li>
+                        <li><a href="#">4</a></li>
+                        <li><a href="#">5</a></li>
+                        <li><a href="#" aria-label="Next"><span aria-hidden="true">&raquo;</span></a></li>
+                    </ul>
+                </nav>
+            </div>  <!-- DIV class="row" -->
 
             <footer class="row">
                 <div class="col-xs-12 col-md-8">
@@ -157,7 +142,7 @@
                     </address>
                 </div>
             </footer>
-        </div> <!-- container -->
+        </div> <!-- .container -->
 
         <!-- jQuery library -->
         <script src="../../js/jquery-1.11.3.js"></script>
@@ -165,7 +150,8 @@
 
         <!-- Latest compiled JavaScript -->
         <script src="../../js/bootstrap.min.js"></script>
-        <script src="../../js/add_poll.js"></script>
+        <script src="../../js/Chart.min.js"></script>
+        <script src="../../js/home.js"></script>
     </body>
 </html>
 

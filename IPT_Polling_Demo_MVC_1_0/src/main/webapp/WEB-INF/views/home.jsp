@@ -42,6 +42,7 @@
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button">Polls <span class="caret"></span></a>
                         <ul class="dropdown-menu" role="menu">
                             <li><a href="polls/browse">Browse All Polls</a></li>
+                            <li><a href="polls/velocity">Browse All Polls [Velocity]</a></li>
                             <li class="divider"></li>
                             <li><a href="polls/add">Add New Poll</a></li>
                             <li><a href="polls/manage">Manage Polls</a></li>
