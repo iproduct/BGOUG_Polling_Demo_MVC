@@ -136,7 +136,8 @@ public class PollsController {
                 valid = false;
             } catch (Exception ex) {
                 errors.getMessages().add("Error creating the poll on server.");
-                Logger.getLogger(PollsController.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(PollsController.class.getName())
+                        .log(Level.SEVERE, null, ex);
                 valid = false;
             }
         }
